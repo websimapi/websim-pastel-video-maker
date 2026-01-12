@@ -119,7 +119,7 @@ const MyComposition = ({ scenes = [] }) => {
     });
   }
   return /* @__PURE__ */ jsxDEV(TransitionSeries, { children: scenes.map((scene, i) => /* @__PURE__ */ jsxDEV(React.Fragment, { children: [
-    /* @__PURE__ */ jsxDEV(TransitionSeries.Sequence, { durationInFrames: Math.max(1, scene.duration * 30), children: /* @__PURE__ */ jsxDEV(SceneComponent, { scene }, void 0, false, {
+    /* @__PURE__ */ jsxDEV(TransitionSeries.Sequence, { durationInFrames: Math.max(1, Math.floor(scene.duration * 30)), children: /* @__PURE__ */ jsxDEV(SceneComponent, { scene }, void 0, false, {
       fileName: "<stdin>",
       lineNumber: 102,
       columnNumber: 13
@@ -152,8 +152,6 @@ const MyComposition = ({ scenes = [] }) => {
     columnNumber: 5
   });
 };
-var stdin_default = MyComposition;
 export {
-  MyComposition,
-  stdin_default as default
+  MyComposition
 };
