@@ -110,15 +110,22 @@ const SceneComponent = ({ scene }) => {
     columnNumber: 5
   });
 };
-const MyComposition = ({ scenes }) => {
-  return /* @__PURE__ */ jsxDEV(TransitionSeries, { children: scenes.map((scene, i) => /* @__PURE__ */ jsxDEV(React.Fragment, { children: [
-    /* @__PURE__ */ jsxDEV(TransitionSeries.Sequence, { durationInFrames: scene.duration * 30, children: /* @__PURE__ */ jsxDEV(SceneComponent, { scene }, void 0, false, {
+const MyComposition = ({ scenes = [] }) => {
+  if (!scenes || scenes.length === 0) {
+    return /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { backgroundColor: "#FFF5F5" } }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 98,
+      lineNumber: 94,
+      columnNumber: 12
+    });
+  }
+  return /* @__PURE__ */ jsxDEV(TransitionSeries, { children: scenes.map((scene, i) => /* @__PURE__ */ jsxDEV(React.Fragment, { children: [
+    /* @__PURE__ */ jsxDEV(TransitionSeries.Sequence, { durationInFrames: Math.max(1, scene.duration * 30), children: /* @__PURE__ */ jsxDEV(SceneComponent, { scene }, void 0, false, {
+      fileName: "<stdin>",
+      lineNumber: 102,
       columnNumber: 13
     }) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 97,
+      lineNumber: 101,
       columnNumber: 11
     }),
     i < scenes.length - 1 && /* @__PURE__ */ jsxDEV(
@@ -131,20 +138,22 @@ const MyComposition = ({ scenes }) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 101,
+        lineNumber: 105,
         columnNumber: 13
       }
     )
   ] }, scene.id, true, {
     fileName: "<stdin>",
-    lineNumber: 96,
+    lineNumber: 100,
     columnNumber: 9
   })) }, void 0, false, {
     fileName: "<stdin>",
-    lineNumber: 94,
+    lineNumber: 98,
     columnNumber: 5
   });
 };
+var stdin_default = MyComposition;
 export {
-  MyComposition
+  MyComposition,
+  stdin_default as default
 };
