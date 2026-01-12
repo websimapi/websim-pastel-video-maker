@@ -49,31 +49,40 @@ const SceneComponent = ({ scene }) => {
       lineNumber: 24,
       columnNumber: 9
     }),
-    scene.stickerUrl && /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { justifyContent: "center", alignItems: "center" }, children: /* @__PURE__ */ jsxDEV(
+    scene.stickerUrl && /* @__PURE__ */ jsxDEV(AbsoluteFill, { children: /* @__PURE__ */ jsxDEV("div", { style: {
+      position: "absolute",
+      left: `${scene.stickerPos?.x ?? 50}%`,
+      top: `${scene.stickerPos?.y ?? 50}%`,
+      transform: `translate(-50%, -50%) rotate(${Math.sin(frame / 10) * 5}deg)`,
+      width: "50%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    }, children: /* @__PURE__ */ jsxDEV(
       Img,
       {
         src: scene.stickerUrl,
-        style: {
-          width: "50%",
-          transform: `rotate(${Math.sin(frame / 10) * 5}deg)`
-          // Cute wiggle
-        }
+        style: { width: "100%" }
       },
       void 0,
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 47,
-        columnNumber: 11
+        lineNumber: 57,
+        columnNumber: 13
       }
     ) }, void 0, false, {
+      fileName: "<stdin>",
+      lineNumber: 47,
+      columnNumber: 11
+    }) }, void 0, false, {
       fileName: "<stdin>",
       lineNumber: 46,
       columnNumber: 9
     }),
     scene.audioUrl && /* @__PURE__ */ jsxDEV(Audio, { src: scene.audioUrl }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 59,
+      lineNumber: 67,
       columnNumber: 9
     }),
     scene.text && /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { justifyContent: "flex-end", alignItems: "center", paddingBottom: "20%" }, children: /* @__PURE__ */ jsxDEV("h1", { style: {
@@ -88,11 +97,11 @@ const SceneComponent = ({ scene }) => {
       maxWidth: "90%"
     }, children: scene.text }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 65,
+      lineNumber: 73,
       columnNumber: 11
     }) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 64,
+      lineNumber: 72,
       columnNumber: 9
     })
   ] }, void 0, true, {
@@ -105,11 +114,11 @@ const MyComposition = ({ scenes }) => {
   return /* @__PURE__ */ jsxDEV(TransitionSeries, { children: scenes.map((scene, i) => /* @__PURE__ */ jsxDEV(React.Fragment, { children: [
     /* @__PURE__ */ jsxDEV(TransitionSeries.Sequence, { durationInFrames: scene.duration * 30, children: /* @__PURE__ */ jsxDEV(SceneComponent, { scene }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 90,
+      lineNumber: 98,
       columnNumber: 13
     }) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 89,
+      lineNumber: 97,
       columnNumber: 11
     }),
     i < scenes.length - 1 && /* @__PURE__ */ jsxDEV(
@@ -122,17 +131,17 @@ const MyComposition = ({ scenes }) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 93,
+        lineNumber: 101,
         columnNumber: 13
       }
     )
   ] }, scene.id, true, {
     fileName: "<stdin>",
-    lineNumber: 88,
+    lineNumber: 96,
     columnNumber: 9
   })) }, void 0, false, {
     fileName: "<stdin>",
-    lineNumber: 86,
+    lineNumber: 94,
     columnNumber: 5
   });
 };

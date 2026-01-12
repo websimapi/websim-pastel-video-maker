@@ -22,6 +22,7 @@ function Studio({ theme, onBack }) {
       // seconds
       bgUrl: null,
       stickerUrl: null,
+      stickerPos: { x: 50, y: 50 },
       audioUrl: null,
       camUrl: null,
       text: ""
@@ -115,15 +116,28 @@ function Studio({ theme, onBack }) {
   };
   const totalDuration = scenes.reduce((acc, s) => acc + s.duration * 30, 0) || 30;
   const [w, h] = aspectRatio === "16:9" ? [1920, 1080] : [1080, 1920];
-  return /* @__PURE__ */ jsxDEV("div", { className: "flex flex-col h-full bg-gray-50", children: [
+  const [isDragging, setIsDragging] = useState(false);
+  const previewRef = useRef(null);
+  const handleDrag = (e) => {
+    if (!isDragging || !selectedSceneId) return;
+    const rect = previewRef.current.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const x = (clientX - rect.left) / rect.width * 100;
+    const y = (clientY - rect.top) / rect.height * 100;
+    const clampedX = Math.max(0, Math.min(100, x));
+    const clampedY = Math.max(0, Math.min(100, y));
+    updateScene(selectedSceneId, { stickerPos: { x: clampedX, y: clampedY } });
+  };
+  return /* @__PURE__ */ jsxDEV("div", { className: "flex flex-col h-full bg-gray-50 overflow-hidden", children: [
     /* @__PURE__ */ jsxDEV("div", { className: "h-14 bg-white border-b flex items-center px-4 justify-between shrink-0 z-20", children: [
       /* @__PURE__ */ jsxDEV("button", { onClick: onBack, className: "p-2 rounded-full hover:bg-gray-100", children: /* @__PURE__ */ jsxDEV(ArrowLeft, { size: 20, className: "text-gray-600" }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 152,
+        lineNumber: 173,
         columnNumber: 11
       }, this) }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 151,
+        lineNumber: 172,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "font-bold text-gray-700", children: [
@@ -131,7 +145,7 @@ function Studio({ theme, onBack }) {
         " Studio"
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 154,
+        lineNumber: 175,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV(
@@ -143,12 +157,12 @@ function Studio({ theme, onBack }) {
           children: [
             /* @__PURE__ */ jsxDEV("option", { value: "9:16", children: "Portrait" }, void 0, false, {
               fileName: "<stdin>",
-              lineNumber: 160,
+              lineNumber: 181,
               columnNumber: 11
             }, this),
             /* @__PURE__ */ jsxDEV("option", { value: "16:9", children: "Landscape" }, void 0, false, {
               fileName: "<stdin>",
-              lineNumber: 161,
+              lineNumber: 182,
               columnNumber: 11
             }, this)
           ]
@@ -157,89 +171,139 @@ function Studio({ theme, onBack }) {
         true,
         {
           fileName: "<stdin>",
-          lineNumber: 155,
+          lineNumber: 176,
           columnNumber: 9
         },
         this
       )
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 150,
+      lineNumber: 171,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("div", { className: "flex-1 relative flex items-center justify-center bg-gray-200 overflow-hidden", children: [
-      /* @__PURE__ */ jsxDEV("div", { className: "relative shadow-2xl", style: {
-        aspectRatio: aspectRatio.replace(":", "/"),
-        height: aspectRatio === "9:16" ? "90%" : "auto",
-        width: aspectRatio === "16:9" ? "95%" : "auto",
-        maxHeight: "90%",
-        maxWidth: "95%"
-      }, children: [
-        scenes.length > 0 ? /* @__PURE__ */ jsxDEV(
-          Player,
-          {
-            component: MyComposition,
-            durationInFrames: totalDuration,
-            fps: 30,
-            compositionWidth: w,
-            compositionHeight: h,
-            inputProps: { scenes },
-            controls: true,
-            style: { width: "100%", height: "100%" }
+      /* @__PURE__ */ jsxDEV(
+        "div",
+        {
+          ref: previewRef,
+          className: "relative shadow-2xl overflow-hidden",
+          style: {
+            aspectRatio: aspectRatio.replace(":", "/"),
+            height: aspectRatio === "9:16" ? "90%" : "auto",
+            width: aspectRatio === "16:9" ? "95%" : "auto",
+            maxHeight: "90%",
+            maxWidth: "95%"
           },
-          void 0,
-          false,
-          {
-            fileName: "<stdin>",
-            lineNumber: 175,
-            columnNumber: 13
-          },
-          this
-        ) : /* @__PURE__ */ jsxDEV("div", { className: "w-full h-full bg-white flex items-center justify-center text-gray-400", children: "No scenes" }, void 0, false, {
+          onMouseDown: () => setIsDragging(true),
+          onMouseMove: handleDrag,
+          onMouseUp: () => setIsDragging(false),
+          onMouseLeave: () => setIsDragging(false),
+          onTouchStart: () => setIsDragging(true),
+          onTouchMove: handleDrag,
+          onTouchEnd: () => setIsDragging(false),
+          children: [
+            scenes.length > 0 ? /* @__PURE__ */ jsxDEV(
+              Player,
+              {
+                component: MyComposition,
+                durationInFrames: totalDuration,
+                fps: 30,
+                compositionWidth: w,
+                compositionHeight: h,
+                inputProps: { scenes },
+                controls: true,
+                style: { width: "100%", height: "100%", pointerEvents: isDragging ? "none" : "auto" }
+              },
+              void 0,
+              false,
+              {
+                fileName: "<stdin>",
+                lineNumber: 207,
+                columnNumber: 13
+              },
+              this
+            ) : /* @__PURE__ */ jsxDEV("div", { className: "w-full h-full bg-white flex items-center justify-center text-gray-400", children: "No scenes" }, void 0, false, {
+              fileName: "<stdin>",
+              lineNumber: 218,
+              columnNumber: 14
+            }, this),
+            getSelectedScene()?.stickerUrl && !isRecording && /* @__PURE__ */ jsxDEV(
+              "div",
+              {
+                className: "absolute pointer-events-none border-2 border-dashed border-white/50 rounded-lg flex items-center justify-center",
+                style: {
+                  left: `${getSelectedScene().stickerPos?.x ?? 50}%`,
+                  top: `${getSelectedScene().stickerPos?.y ?? 50}%`,
+                  width: "50%",
+                  height: "30%",
+                  transform: "translate(-50%, -50%)",
+                  backgroundColor: isDragging ? "rgba(255,255,255,0.1)" : "transparent"
+                },
+                children: !isDragging && /* @__PURE__ */ jsxDEV("div", { className: "bg-white/80 rounded-full p-1 shadow-sm", children: /* @__PURE__ */ jsxDEV(Plus, { size: 16, className: "text-blue-500 rotate-45" }, void 0, false, {
+                  fileName: "<stdin>",
+                  lineNumber: 236,
+                  columnNumber: 19
+                }, this) }, void 0, false, {
+                  fileName: "<stdin>",
+                  lineNumber: 235,
+                  columnNumber: 17
+                }, this)
+              },
+              void 0,
+              false,
+              {
+                fileName: "<stdin>",
+                lineNumber: 223,
+                columnNumber: 13
+              },
+              this
+            ),
+            /* @__PURE__ */ jsxDEV(
+              "video",
+              {
+                ref: videoRef,
+                muted: true,
+                className: `absolute bottom-4 right-4 w-32 h-32 object-cover rounded-full border-4 border-red-500 z-50 ${isRecording ? "block" : "hidden"}`
+              },
+              void 0,
+              false,
+              {
+                fileName: "<stdin>",
+                lineNumber: 243,
+                columnNumber: 11
+              },
+              this
+            )
+          ]
+        },
+        void 0,
+        true,
+        {
           fileName: "<stdin>",
-          lineNumber: 186,
-          columnNumber: 14
-        }, this),
-        /* @__PURE__ */ jsxDEV(
-          "video",
-          {
-            ref: videoRef,
-            muted: true,
-            className: `absolute bottom-4 right-4 w-32 h-32 object-cover rounded-full border-4 border-red-500 z-50 ${isRecording ? "block" : "hidden"}`
-          },
-          void 0,
-          false,
-          {
-            fileName: "<stdin>",
-            lineNumber: 190,
-            columnNumber: 11
-          },
-          this
-        )
-      ] }, void 0, true, {
-        fileName: "<stdin>",
-        lineNumber: 167,
-        columnNumber: 9
-      }, this),
+          lineNumber: 188,
+          columnNumber: 9
+        },
+        this
+      ),
       loadingAction && /* @__PURE__ */ jsxDEV("div", { className: "absolute inset-0 bg-black/50 flex flex-col items-center justify-center z-50 text-white backdrop-blur-sm", children: [
         /* @__PURE__ */ jsxDEV("div", { className: "w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mb-4" }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 199,
+          lineNumber: 252,
           columnNumber: 14
         }, this),
         /* @__PURE__ */ jsxDEV("p", { className: "font-bold text-lg", children: loadingAction }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 200,
+          lineNumber: 253,
           columnNumber: 14
         }, this)
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 198,
+        lineNumber: 251,
         columnNumber: 11
       }, this)
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 166,
+      lineNumber: 187,
       columnNumber: 7
     }, this),
     /* @__PURE__ */ jsxDEV("div", { className: "h-64 bg-white border-t shrink-0 flex flex-col shadow-[0_-5px_20px_rgba(0,0,0,0.05)] z-20", children: [
@@ -252,16 +316,16 @@ function Studio({ theme, onBack }) {
             children: [
               scene.bgUrl ? /* @__PURE__ */ jsxDEV("img", { src: scene.bgUrl, className: "w-full h-full object-cover" }, void 0, false, {
                 fileName: "<stdin>",
-                lineNumber: 217,
+                lineNumber: 270,
                 columnNumber: 17
               }, this) : /* @__PURE__ */ jsxDEV("div", { className: "w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-400", children: "Empty" }, void 0, false, {
                 fileName: "<stdin>",
-                lineNumber: 219,
+                lineNumber: 272,
                 columnNumber: 17
               }, this),
               /* @__PURE__ */ jsxDEV("div", { className: "absolute bottom-0 right-0 bg-black/50 text-white text-[10px] px-1", children: i + 1 }, void 0, false, {
                 fileName: "<stdin>",
-                lineNumber: 221,
+                lineNumber: 274,
                 columnNumber: 15
               }, this)
             ]
@@ -270,23 +334,23 @@ function Studio({ theme, onBack }) {
           true,
           {
             fileName: "<stdin>",
-            lineNumber: 211,
+            lineNumber: 264,
             columnNumber: 13
           },
           this
         )),
         /* @__PURE__ */ jsxDEV("button", { onClick: addScene, className: "flex-shrink-0 w-16 h-16 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:border-blue-300", children: /* @__PURE__ */ jsxDEV(Plus, {}, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 225,
+          lineNumber: 278,
           columnNumber: 13
         }, this) }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 224,
+          lineNumber: 277,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 209,
+        lineNumber: 262,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV("div", { className: "flex-1 p-4", children: selectedSceneId ? /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-4 gap-2 h-full", children: [
@@ -302,7 +366,7 @@ function Studio({ theme, onBack }) {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 233,
+            lineNumber: 286,
             columnNumber: 17
           },
           this
@@ -319,7 +383,7 @@ function Studio({ theme, onBack }) {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 239,
+            lineNumber: 292,
             columnNumber: 17
           },
           this
@@ -336,7 +400,7 @@ function Studio({ theme, onBack }) {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 245,
+            lineNumber: 298,
             columnNumber: 17
           },
           this
@@ -353,32 +417,32 @@ function Studio({ theme, onBack }) {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 251,
+            lineNumber: 304,
             columnNumber: 17
           },
           this
         )
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 232,
+        lineNumber: 285,
         columnNumber: 15
       }, this) : /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-center h-full text-gray-400", children: "Select a scene to edit" }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 259,
+        lineNumber: 312,
         columnNumber: 15
       }, this) }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 230,
+        lineNumber: 283,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 206,
+      lineNumber: 259,
       columnNumber: 7
     }, this)
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 147,
+    lineNumber: 168,
     columnNumber: 5
   }, this);
 }
@@ -390,12 +454,12 @@ const ToolButton = ({ icon: Icon, label, color, onClick }) => /* @__PURE__ */ js
     children: [
       /* @__PURE__ */ jsxDEV(Icon, { size: 24, className: "mb-1" }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 272,
+        lineNumber: 325,
         columnNumber: 5
       }),
       /* @__PURE__ */ jsxDEV("span", { className: "text-[10px] font-bold uppercase tracking-wide", children: label }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 273,
+        lineNumber: 326,
         columnNumber: 5
       })
     ]
@@ -404,7 +468,7 @@ const ToolButton = ({ icon: Icon, label, color, onClick }) => /* @__PURE__ */ js
   true,
   {
     fileName: "<stdin>",
-    lineNumber: 268,
+    lineNumber: 321,
     columnNumber: 3
   }
 );
