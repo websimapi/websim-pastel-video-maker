@@ -11,26 +11,34 @@ const SceneComponent = ({ scene }) => {
   let currentX = scene.stickerPos?.x ?? 50;
   let currentY = scene.stickerPos?.y ?? 50;
   if (scene.stickerPath && scene.stickerPath.length > 1) {
-    const inputFrames = scene.stickerPath.map((p) => p.t * sceneDurationFrames);
-    const outputX = scene.stickerPath.map((p) => p.x);
-    const outputY = scene.stickerPath.map((p) => p.y);
-    currentX = interpolate(frame, inputFrames, outputX, {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp"
-    });
-    currentY = interpolate(frame, inputFrames, outputY, {
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp"
-    });
+    const uniquePoints = [];
+    for (const pt of scene.stickerPath) {
+      if (uniquePoints.length === 0 || pt.t > uniquePoints[uniquePoints.length - 1].t) {
+        uniquePoints.push(pt);
+      }
+    }
+    if (uniquePoints.length > 1) {
+      const inputFrames = uniquePoints.map((p) => p.t * sceneDurationFrames);
+      const outputX = uniquePoints.map((p) => p.x);
+      const outputY = uniquePoints.map((p) => p.y);
+      currentX = interpolate(frame, inputFrames, outputX, {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp"
+      });
+      currentY = interpolate(frame, inputFrames, outputY, {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp"
+      });
+    }
   }
   return /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { backgroundColor: "white" }, children: [
     scene.bgUrl && /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { transform: `scale(${scale})` }, children: /* @__PURE__ */ jsxDEV(Img, { src: scene.bgUrl, style: { width: "100%", height: "100%", objectFit: "cover" } }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 39,
+      lineNumber: 48,
       columnNumber: 11
     }) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 38,
+      lineNumber: 47,
       columnNumber: 9
     }),
     scene.camUrl && /* @__PURE__ */ jsxDEV(AbsoluteFill, { children: /* @__PURE__ */ jsxDEV("div", { style: {
@@ -53,16 +61,16 @@ const SceneComponent = ({ scene }) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 57,
+        lineNumber: 66,
         columnNumber: 13
       }
     ) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 46,
+      lineNumber: 55,
       columnNumber: 11
     }) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 45,
+      lineNumber: 54,
       columnNumber: 9
     }),
     scene.stickerUrl && /* @__PURE__ */ jsxDEV(AbsoluteFill, { children: /* @__PURE__ */ jsxDEV("div", { style: {
@@ -84,21 +92,21 @@ const SceneComponent = ({ scene }) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 78,
+        lineNumber: 87,
         columnNumber: 13
       }
     ) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 68,
+      lineNumber: 77,
       columnNumber: 11
     }) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 67,
+      lineNumber: 76,
       columnNumber: 9
     }),
     scene.audioUrl && /* @__PURE__ */ jsxDEV(Audio, { src: scene.audioUrl }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 88,
+      lineNumber: 97,
       columnNumber: 9
     }),
     scene.text && /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { justifyContent: "flex-end", alignItems: "center", paddingBottom: "20%" }, children: /* @__PURE__ */ jsxDEV("h1", { style: {
@@ -113,16 +121,16 @@ const SceneComponent = ({ scene }) => {
       maxWidth: "90%"
     }, children: scene.text }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 94,
+      lineNumber: 103,
       columnNumber: 11
     }) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 93,
+      lineNumber: 102,
       columnNumber: 9
     })
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 35,
+    lineNumber: 44,
     columnNumber: 5
   });
 };
@@ -130,18 +138,18 @@ const MyComposition = ({ scenes = [] }) => {
   if (!scenes || scenes.length === 0) {
     return /* @__PURE__ */ jsxDEV(AbsoluteFill, { style: { backgroundColor: "#FFF5F5" } }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 115,
+      lineNumber: 124,
       columnNumber: 12
     });
   }
   return /* @__PURE__ */ jsxDEV(TransitionSeries, { children: scenes.map((scene, i) => /* @__PURE__ */ jsxDEV(React.Fragment, { children: [
     /* @__PURE__ */ jsxDEV(TransitionSeries.Sequence, { durationInFrames: Math.max(1, Math.floor(scene.duration * 30)), children: /* @__PURE__ */ jsxDEV(SceneComponent, { scene }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 123,
+      lineNumber: 132,
       columnNumber: 13
     }) }, void 0, false, {
       fileName: "<stdin>",
-      lineNumber: 122,
+      lineNumber: 131,
       columnNumber: 11
     }),
     i < scenes.length - 1 && /* @__PURE__ */ jsxDEV(
@@ -154,17 +162,17 @@ const MyComposition = ({ scenes = [] }) => {
       false,
       {
         fileName: "<stdin>",
-        lineNumber: 126,
+        lineNumber: 135,
         columnNumber: 13
       }
     )
   ] }, scene.id, true, {
     fileName: "<stdin>",
-    lineNumber: 121,
+    lineNumber: 130,
     columnNumber: 9
   })) }, void 0, false, {
     fileName: "<stdin>",
-    lineNumber: 119,
+    lineNumber: 128,
     columnNumber: 5
   });
 };
